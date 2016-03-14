@@ -37,12 +37,12 @@ defmodule Dory.Gossip do
     #
     # If they all fail, gossip that target is down.
     unless Member.ping(target) do
-      unreachable = members
+      reachable = members
       |> Enum.map &Member.ping_req(&1, target)
       |> Enum.any?
 
-      if unreachable do
-        gossip(%Message{:suspect, [target], [], 0})
+      unless reachable do
+        gossip(%Message{kind: :suspect, members: [target], message: nil})
       end
     end
 

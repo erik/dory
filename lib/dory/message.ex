@@ -1,3 +1,3 @@
 defmodule Dory.Message do
-  defstruct [:kind, :members, :message, :clock]
+  defstruct [:kind, :members, :message]
 end
