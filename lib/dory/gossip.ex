@@ -1,11 +1,17 @@
 defmodule Dory.Gossip do
   use GenServer
   require Logger
+
   alias Dory.Memberlist
   alias Dory.Member
+  alias Dory.Message
 
   # How long to wait between each gossip phase (in ms)
   @gossip_interval 1_000
+
+  def gossip(message) do
+    # TODO: write me
+  end
 
   def start_link, do: GenServer.start_link(__MODULE__, [], name: __MODULE__)
 
@@ -23,11 +29,22 @@ defmodule Dory.Gossip do
 
   defp gossip_step(state) do
     Logger.info("time to gossip!")
-    members = Memberlist.random_members(5)
 
-    # TODO: ping all members
-    # TODO: send ping_reqs out for no-responses
-    # TODO: gossip out suspects
+    [target | members] = Memberlist.random_members(5)
+
+    # First try pinging our target, and if that times out, ask the remaining
+    # members to also try pinging that target.
+    #
+    # If they all fail, gossip that target is down.
+    unless Member.ping(target) do
+      unreachable = members
+      |> Enum.map &Member.ping_req(&1, target)
+      |> Enum.any?
+
+      if unreachable do
+        gossip(%Message{:suspect, [target], [], 0})
+      end
+    end
 
     state
   end
