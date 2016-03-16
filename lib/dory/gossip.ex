@@ -28,22 +28,23 @@ defmodule Dory.Gossip do
   end
 
   defp gossip_step(state) do
-    Logger.info("time to gossip!")
 
-    [target | members] = Memberlist.random_members(5)
+    case Memberlist.random_members(5) do
+      [] -> nil # Logger.info("so lonely...")
+      [target | members] ->
+        # First try pinging our target, and if that times out, ask the remaining
+        # members to also try pinging that target.
+        #
+        # If they all fail, gossip that target is down.
+        unless Member.ping(target) do
+          reachable = members
+          |> Enum.map &Member.ping_req(&1, target)
+          |> Enum.any?
 
-    # First try pinging our target, and if that times out, ask the remaining
-    # members to also try pinging that target.
-    #
-    # If they all fail, gossip that target is down.
-    unless Member.ping(target) do
-      reachable = members
-      |> Enum.map &Member.ping_req(&1, target)
-      |> Enum.any?
-
-      unless reachable do
-        gossip(%Message{kind: :suspect, members: [target], message: nil})
-      end
+          unless reachable do
+            gossip(%Message{kind: :suspect, members: [target], message: nil})
+          end
+        end
     end
 
     state
