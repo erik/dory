@@ -6,10 +6,10 @@ defmodule Dory.Bootstrap do
   alias Dory.Member
 
   def accept(port) do
+    Logger.info("Bootstrap accepting connections on port #{port}")
     {:ok, socket} = :gen_tcp.listen(port, [
           :binary, packet: :line, active: false, reuseaddr: true])
 
-    Logger.info("Accepting connections on port #{port}")
     loop_accept(socket)
   end
 
