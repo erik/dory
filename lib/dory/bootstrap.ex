@@ -1,6 +1,7 @@
 defmodule Dory.Bootstrap do
   use GenServer
   require Logger
+  require Poison
   alias Dory.Memberlist
   alias Dory.Member
 
@@ -25,7 +26,7 @@ defmodule Dory.Bootstrap do
     Logger.info("got #{inspect data}")
 
     known_members = Memberlist.known_members()
-    |> Enum.map(&Member.encode &1)
+    |> Enum.map(&Poison.encode! &1)
     |> Enum.join(",")
 
     :gen_tcp.send(socket, known_members <> "\n")

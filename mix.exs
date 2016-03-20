@@ -28,6 +28,7 @@ defmodule Dory.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    [{:socket, "~> 0.3.1"}]
+    [{:poison, "~> 2.0"},
+     {:socket, "~> 0.3.1"}]
   end
 end
