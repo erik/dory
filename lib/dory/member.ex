@@ -10,6 +10,6 @@ defmodule Dory.Member do
   def ack(member, from, timeout \\ 30), do: false
 
   def self() do
-    %__MODULE__{host: 'localhost', port: 1929, name: 'hi', state: :up}
+    %__MODULE__{host: 'localhost', port: 9999, name: 'hi', state: :up}
   end
 end

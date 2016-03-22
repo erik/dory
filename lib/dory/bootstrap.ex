@@ -20,16 +20,12 @@ defmodule Dory.Bootstrap do
   end
 
   defp handle_connection(socket) do
-    Logger.info("got a client: #{inspect socket}, awaiting hello")
-
-    {:ok, data} = :gen_tcp.recv(socket, 0, 1000)
-    Logger.info("got #{inspect data}")
+    Logger.info("got a client: #{inspect socket}")
 
     known_members = Memberlist.known_members()
-    |> Enum.map(&Poison.encode! &1)
-    |> Enum.join(",")
+    |> Poison.encode!(as: [%Member{}])
 
     :gen_tcp.send(socket, known_members <> "\n")
-    Logger.info("yo")
+    Logger.info("sent messages")
   end
 end

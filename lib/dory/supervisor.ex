@@ -2,6 +2,8 @@ defmodule Dory.Supervisor do
   use Supervisor
   require Logger
 
+  alias Dory.Member
+
   def start_link do
     Supervisor.start_link(__MODULE__, [])
   end
@@ -39,12 +41,11 @@ defmodule Dory.Supervisor do
     {:ok, client} = :gen_tcp.connect(host |> String.to_char_list , port, [
           :binary, packet: :line, active: false])
 
-    :ok = :gen_tcp.send(client, "HELLO!\n")
-    Logger.info("hereererer e #{inspect client}")
-
+    # Get a list of clients from the node
     {:ok, resp} = :gen_tcp.recv(client, 0, 1000)
 
-    Logger.info("response is alive #{inspect resp}")
+    members = Poison.decode!(resp, as: [%Member{}])
+    Logger.info("response is alive #{inspect members}")
     :ok = :gen_tcp.close(client)
   end
 end
