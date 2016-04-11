@@ -11,8 +11,7 @@ defmodule Dory.Supervisor do
 
   def init([]) do
     Logger.info(IO.ANSI.green <> "Supervisor started" <> IO.ANSI.reset)
-    Logger.info(IO.ANSI.red <> "i see #{inspect System.argv}" <> IO.ANSI.reset)
-
+    Logger.info(IO.ANSI.green <> "#{inspect Dory.Config.getit}")
 
     case {System.get_env("SEED_HOST"), System.get_env("SEED_PORT")} do
       {host, port_str} when not is_nil(host) and not is_nil(port_str)->
