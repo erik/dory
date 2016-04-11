@@ -20,6 +20,11 @@ defmodule Dory.Memberlist do
     {:ok, []}
   end
 
+  def handle_call({:join, member}, _from, state) do
+    Logger.info(IO.ANSI.green <> "JOIN #{inspect member}" <> IO.ANSI.reset)
+    {:reply, member, state}
+  end
+
   def handle_call({:random_members, num}, _from, state) do
     members = state |> Enum.take_random(num)
     {:reply, members, state}

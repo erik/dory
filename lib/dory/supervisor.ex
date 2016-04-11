@@ -3,6 +3,7 @@ defmodule Dory.Supervisor do
   require Logger
 
   alias Dory.Member
+  alias Dory.Memberlist
 
   def start_link do
     Supervisor.start_link(__MODULE__, [])
@@ -10,6 +11,8 @@ defmodule Dory.Supervisor do
 
   def init([]) do
     Logger.info(IO.ANSI.green <> "Supervisor started" <> IO.ANSI.reset)
+    Logger.info(IO.ANSI.red <> "i see #{inspect System.argv}" <> IO.ANSI.reset)
+
 
     case {System.get_env("SEED_HOST"), System.get_env("SEED_PORT")} do
       {host, port_str} when not is_nil(host) and not is_nil(port_str)->
@@ -45,7 +48,9 @@ defmodule Dory.Supervisor do
     {:ok, resp} = :gen_tcp.recv(client, 0, 1000)
 
     members = Poison.decode!(resp, as: [%Member{}])
-    Logger.info("response is alive #{inspect members}")
     :ok = :gen_tcp.close(client)
+
+    Logger.info("response is alive #{inspect members}")
+    members |> Enum.map(&Memberlist.join &1)
   end
 end

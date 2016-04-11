@@ -7,5 +7,4 @@ defmodule Dory do
     IO.puts "supervisor start"
     Dory.Supervisor.start_link()
   end
-
 end
