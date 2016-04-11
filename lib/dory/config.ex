@@ -34,10 +34,10 @@ defmodule Dory.Config do
           _ -> raise ArgumentError, message: "Invalid host:port #{inspect value}"
         end
 
-
       {:listen, value} ->
-        IO.puts "#{inspect value}"
-
+        IO.puts "LISTEN ON PORT #{inspect value} >>"
+        port = String.to_integer(value)
+        Agent.update(@agent, &Map.put(&1, :bind_port, port))
       x ->
         IO.puts "#{inspect x}"
     end
@@ -45,8 +45,12 @@ defmodule Dory.Config do
     IO.puts "the state: #{inspect Agent.get(@agent, fn x -> x end)}"
   end
 
-  def getit do
-    Agent.get(@agent, fn x -> x end)
+  def get do
+    Agent.get(@agent, fn cfg -> cfg end)
+  end
+
+  def get(val) do
+    Agent.get(@agent, &Map.get(&1, val))
   end
 
 end
